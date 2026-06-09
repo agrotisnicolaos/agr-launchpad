@@ -60,8 +60,16 @@ make use-pack name=ml        # install a pack into the active config
 make unuse-pack name=ml      # remove it
 ```
 
-A pack bundles skills, agents, MCP servers, and a rulebook fragment. Only `_template` ships
-populated — you grow the catalog yourself. See [`packs/README.md`](packs/README.md).
+A pack bundles skills, agents, MCP servers, plugins, or a rulebook fragment. Local packs live in
+`packs/` (only `_template` ships populated). Published packs install from the **agr·hub** marketplace
+— already pre-registered here — with one command:
+
+```
+/plugin install <pack>@agr-hub
+```
+
+Browse available packs and projects at **[agrotisnicolaos.github.io/agr-hub](https://agrotisnicolaos.github.io/agr-hub/)**.
+See [`packs/README.md`](packs/README.md) for building your own.
 
 ## Conventions
 

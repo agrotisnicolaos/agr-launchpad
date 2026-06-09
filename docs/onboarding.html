@@ -315,10 +315,13 @@ make unuse-pack name=ml   # remove it again</code></pre>
     <p>Installing copies the pack's skills and agents into place, adds any MCP servers it needs, and
       appends its rules to <code>CLAUDE.md</code> — all reversible. Only the <code>_template</code>
       ships filled in; it's a worked example you copy to build your own (see <code>packs/README.md</code>).</p>
-    <p><b>Published packs</b> come from a marketplace and install with one command — for example:</p>
+    <p><b>Published packs</b> come from <b>agr·hub</b> — a marketplace this repo already knows about
+      (it's pre-registered in <code>.claude/settings.json</code>). So when a new pack is ready, you
+      install it with a single command, no setup:</p>
     <pre><code>/plugin install ml@agr-hub</code></pre>
-    <p>That's how new packs will be shared over time: you'll be told a pack is ready, and a single
-      <code>/plugin install</code> adds it — skills, agents, tools and all.</p>
+    <p>That's how new packs are shared over time: you'll be told a pack is ready, and one
+      <code>/plugin install</code> adds it — skills, agents, tools and all. Browse what's available at
+      <a href="https://agrotisnicolaos.github.io/agr-hub/">agrotisnicolaos.github.io/agr-hub</a>.</p>
   </section>
 
   <section id="gsd">
