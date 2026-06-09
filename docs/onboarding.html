@@ -201,7 +201,22 @@ cd agr-launchpad</code></pre>
 
   <section id="plugins">
     <h2><span class="num">4</span>The plugins</h2>
-    <p>These install automatically when you trust the folder and approve the prompts.</p>
+    <p class="note"><b>Why aren't these already installed?</b> Claude Code plugins live in <em>your</em>
+      Claude setup (your global <code>~/.claude</code>), not inside a project folder — so no repository
+      can physically ship them pre-installed. What this repo <em>does</em> is pre-configure them (in
+      <code>.claude/settings.json</code>) so Claude Code installs them <b>for you</b> with a couple of
+      clicks. You never hunt them down by hand.</p>
+    <h3>Two ways to install them</h3>
+    <p><b>A — Automatic (recommended).</b> When you trust the folder, Claude Code detects the
+      pre-configured plugins and offers to add two marketplaces and install all six. Click
+      <span class="kbd">Approve</span> on each prompt. That's it.</p>
+    <p><b>B — One command.</b> Prefer the terminal, or the prompts didn't appear? Run:</p>
+    <pre><code>make install-plugins</code></pre>
+    <p>This uses the Claude Code CLI to add the marketplaces and install every plugin in one go. Restart
+      Claude Code afterward.</p>
+    <p class="note"><b>Verify any time:</b> type <code>/plugin</code> in Claude Code (or run
+      <code>claude plugin list</code> in a terminal) — all six should be listed and enabled.</p>
+    <h3>What each one gives you</h3>
     <div class="grid">
       <div class="card"><h4>superpowers</h4><p>Disciplined workflows: brainstorming before coding,
         writing plans, test-driven development, systematic debugging, verifying before claiming done.</p></div>
@@ -216,30 +231,43 @@ cd agr-launchpad</code></pre>
       <div class="card"><h4>claude-mem</h4><p>Persistent memory — Claude remembers what you worked on
         across sessions, so you don't re-explain your project every time.</p></div>
     </div>
-    <p class="note">After setup, type <code>/plugin</code> in Claude Code to confirm they're all enabled.</p>
   </section>
 
   <section id="mcp">
     <h2><span class="num">5</span>The MCP servers</h2>
-    <p>MCP servers give Claude live connections to the outside world. Three ship in <code>.mcp.json</code>:</p>
+    <p>MCP servers give Claude live connections to the outside world. Three are already declared in
+      this repo's <code>.mcp.json</code>, so you don't add them by hand — you just <b>approve</b> them
+      once and (for two of them) do one small setup step.</p>
+
+    <h3>Step 1 — Approve them</h3>
+    <p>When you trust the folder, Claude Code asks whether to enable the project's MCP servers. Click
+      <span class="kbd">Approve</span>. To check or re-approve later, run <code>claude mcp list</code>
+      in a terminal, or type <code>/mcp</code> inside Claude Code.</p>
+
+    <h3>Step 2 — Per-server setup</h3>
     <table>
-      <tr><th>Server</th><th>What it does</th><th>Setup</th></tr>
+      <tr><th>Server</th><th>What it does</th><th>What you do</th></tr>
       <tr><td><b>context7</b></td><td>Pulls the <i>current</i> docs for any library or framework, so
-        Claude doesn't rely on stale training data.</td><td>None — works immediately.</td></tr>
+        Claude doesn't rely on stale training data.</td>
+        <td><b>Nothing.</b> Works as soon as it's approved (it runs via <code>npx</code>, which Node provides).</td></tr>
       <tr><td><b>github</b></td><td>Reads and manages your GitHub repos, issues, and pull requests.</td>
-        <td>Needs a token — see below.</td></tr>
+        <td>Add a token — see just below. Skip if you don't want GitHub features yet.</td></tr>
       <tr><td><b>jupyter</b></td><td>Live notebook kernel: Claude can run and edit <code>.ipynb</code> cells.</td>
-        <td>Run <code>make jupyter</code> when you want it.</td></tr>
+        <td>Run <code>make jupyter</code> in a terminal and leave it open. (Needs <a href="https://astral.sh/uv">uv</a>.)</td></tr>
     </table>
-    <h3>Giving GitHub a token</h3>
+
+    <h3>Giving GitHub a token (only for the github server)</h3>
     <ol>
+      <li>Copy the env template once: <pre><code>cp .env.example .env</code></pre></li>
       <li>Create a token at <a href="https://github.com/settings/tokens">github.com/settings/tokens</a>
-        (a fine-grained token with minimal access is best).</li>
-      <li>Open <code>.env</code> and paste it: <code>GITHUB_PAT=ghp_your_token_here</code></li>
-      <li>Restart Claude Code.</li>
+        → <b>Generate new token</b> (a fine-grained token with read access to your repos is plenty).</li>
+      <li>Open <code>.env</code> and paste it after the equals sign:
+        <pre><code>GITHUB_PAT=github_pat_xxxxxxxxxxxx</code></pre></li>
+      <li>Restart Claude Code. Verify with <code>claude mcp list</code> — <code>github</code> should show as connected.</li>
     </ol>
     <p class="warn"><b>Your token stays private.</b> <code>.env</code> is git-ignored — it is never
-      committed or shared. Leave <code>GITHUB_PAT</code> blank if you don't want the GitHub features yet.</p>
+      committed or shared. Leave <code>GITHUB_PAT</code> blank to skip GitHub entirely; the other two
+      servers still work.</p>
   </section>
 
   <section id="skills">
@@ -266,43 +294,62 @@ cd agr-launchpad</code></pre>
 
   <section id="packs">
     <h2><span class="num">7</span>Packs — add capability for a project</h2>
-    <p>The base is deliberately lean. When you start a particular kind of project, install a <b>pack</b>:
-      a bundle of project-specific skills, agents, tools, and rules.</p>
+    <p>The base is deliberately lean. A <b>pack</b> is how you add capability for a <em>specific</em>
+      kind of project. A pack isn't limited to one type of thing — it can bundle any mix of:</p>
+    <div class="grid">
+      <div class="card"><h4>Skills</h4><p>New <code>/slash</code> commands for that domain.</p></div>
+      <div class="card"><h4>Agents</h4><p>Specialist subagents Claude can dispatch.</p></div>
+      <div class="card"><h4>MCP servers</h4><p>Extra live tools/data connections.</p></div>
+      <div class="card"><h4>Plugins</h4><p>Whole plugins, pulled in for that project type.</p></div>
+      <div class="card"><h4>Rules</h4><p>A rulebook fragment added to <code>CLAUDE.md</code>.</p></div>
+      <div class="card"><h4>Templates &amp; tools</h4><p>Any other assets the project needs.</p></div>
+    </div>
+    <p>In short: <b>a pack can add plugins or any other asset</b>, not just skills.</p>
+
+    <h3>Two ways packs reach you</h3>
+    <p><b>Local packs</b> bundled in this repo's <code>packs/</code> folder — manage them with:</p>
     <pre><code>make list-packs           # see what's available
 make new-pack name=ml     # create a new pack from the template
 make use-pack name=ml     # install a pack into your setup
 make unuse-pack name=ml   # remove it again</code></pre>
-    <p>Installing a pack copies its skills and agents into place, adds any tools it needs, and appends
-      its rules to <code>CLAUDE.md</code> — all reversible. Only the <code>_template</code> ships filled
-      in; it's a worked example you copy to build your own.</p>
-    <table>
-      <tr><th>Planned pack</th><th>Would add</th></tr>
-      <tr><td><code>ml</code></td><td>data &amp; machine-learning skills, evaluation agents, notebook conventions</td></tr>
-      <tr><td><code>ios</code></td><td>Swift / SwiftUI patterns, on-device model skills, build helpers</td></tr>
-      <tr><td><code>journal</code></td><td>journaling &amp; writing skills, daily-note templates, reflection prompts</td></tr>
-      <tr><td><code>web</code></td><td>front-end patterns, component &amp; accessibility agents</td></tr>
-    </table>
-    <p class="note">Building these out is the fun part — and it's where this kit grows with you. See
-      <code>packs/README.md</code> for the full guide.</p>
+    <p>Installing copies the pack's skills and agents into place, adds any MCP servers it needs, and
+      appends its rules to <code>CLAUDE.md</code> — all reversible. Only the <code>_template</code>
+      ships filled in; it's a worked example you copy to build your own (see <code>packs/README.md</code>).</p>
+    <p><b>Published packs</b> come from a marketplace and install with one command — for example:</p>
+    <pre><code>/plugin install ml@agr-hub</code></pre>
+    <p>That's how new packs will be shared over time: you'll be told a pack is ready, and a single
+      <code>/plugin install</code> adds it — skills, agents, tools and all.</p>
   </section>
 
   <section id="gsd">
-    <h2><span class="num">8</span>gsd (installed separately)</h2>
-    <p><b>gsd</b> (“get stuff done”) is a powerful planning toolkit — it breaks big goals into phases,
-      plans, and verified steps. Unlike the plugins above, it installs globally into your Claude setup
-      (<code>~/.claude</code>) rather than from this repo, so it works across <em>all</em> your projects.</p>
-    <p>Install it from its own project per its README. Once installed, its <code>/gsd-*</code> commands
-      appear automatically. It's optional — everything else here works without it.</p>
+    <h2><span class="num">8</span>gsd (installed separately — optional)</h2>
+    <p><b>gsd</b> (“get shit done”) is a powerful planning toolkit — it breaks big goals into phases,
+      plans, and verified steps. It installs globally into your Claude setup (<code>~/.claude</code>)
+      rather than from this repo, so once installed it works across <em>all</em> your projects. That's
+      also why it isn't in <code>make install-plugins</code> — it's its own installer.</p>
+    <h3>Install</h3>
+    <p>Run this once in a terminal (needs Node.js):</p>
+    <pre><code>npx get-shit-done-cc@latest</code></pre>
+    <p>Follow its prompts, then <b>restart Claude Code</b>. Its <code>/gsd-*</code> commands now appear
+      in every project. Update later with the same command, or <code>/gsd-update</code> inside Claude.
+      Everything else in this kit works without gsd — install it only if you want milestone-scale planning.</p>
   </section>
 
   <section id="markitdown">
-    <h2><span class="num">9</span>markitdown (turn any file into Markdown)</h2>
+    <h2><span class="num">9</span>markitdown (turn any file into Markdown — optional)</h2>
     <p>The <a href="https://github.com/BioInfo/vscode-markitdown">markitdown</a> VS Code extension converts
       PDFs, Word/Excel/PowerPoint, HTML, and images into clean Markdown — perfect for feeding documents
-      to Claude.</p>
-    <p>When you open this folder in VS Code, it's recommended automatically (via
-      <code>.vscode/extensions.json</code>) — just click <span class="kbd">Install</span>. Or install it
-      from the linked repository.</p>
+      to Claude. It's a <b>VS Code extension</b>, so it installs through VS Code, not through Claude Code.</p>
+    <h3>Install</h3>
+    <ol>
+      <li>Open this folder in <b>VS Code</b>. A toast appears: “This workspace has extension
+        recommendations.” Click <span class="kbd">Install All</span> — that's the fastest path
+        (it's recommended via <code>.vscode/extensions.json</code>).</li>
+      <li>No toast? Open the Extensions panel (<span class="kbd">⌘⇧X</span> / <span class="kbd">Ctrl+Shift+X</span>),
+        search <b>MarkItDown</b> (publisher <i>BioInfo</i>), and click <span class="kbd">Install</span>.</li>
+      <li>Use it: right-click a supported file → <b>Convert to Markdown</b>. (If it asks for the
+        underlying tool, the extension's README covers the one-time <code>markitdown</code> dependency.)</li>
+    </ol>
   </section>
 
   <section id="workflow">
@@ -322,8 +369,9 @@ make unuse-pack name=ml   # remove it again</code></pre>
   <section id="trouble">
     <h2><span class="num">11</span>Troubleshooting &amp; FAQ</h2>
     <h3>I didn't get the plugin install prompts</h3>
-    <p>Make sure you <b>trusted the folder</b>, then restart Claude Code. You can also run
-      <code>/plugin</code> and add them manually, or <code>make setup</code> for the steps.</p>
+    <p>Make sure you <b>trusted the folder</b>, then restart Claude Code. Or skip the prompts entirely
+      and run <code>make install-plugins</code> in a terminal — it installs all six via the Claude Code
+      CLI. Confirm with <code>/plugin</code> or <code>claude plugin list</code>.</p>
     <h3>The GitHub tools aren't working</h3>
     <p>Check that <code>.env</code> exists and <code>GITHUB_PAT</code> is filled in, then restart.</p>
     <h3>Jupyter says it can't connect</h3>

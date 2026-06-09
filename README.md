@@ -18,16 +18,20 @@ When you start a specific kind of project (ML, an iOS app, a journal…), you ad
    cd agr-launchpad
    ```
    Open the folder in Claude Code (or VS Code with the Claude Code extension).
-3. **Trust the folder** when prompted. Claude Code then offers to install the bundled plugins and
-   marketplaces — **approve them**.
-4. **Approve the MCP servers** when asked (context7, github, jupyter).
+3. **Install the plugins.** Trust the folder and **approve** the install prompts, *or* run one command:
+   ```bash
+   make install-plugins
+   ```
+   (Plugins live in your global Claude setup, so they can't ship pre-installed in a repo — this repo
+   just pre-configures them. Confirm with `/plugin` or `claude plugin list`.)
+4. **Approve the MCP servers** when asked (context7, github, jupyter). Check with `claude mcp list`.
 5. **Add secrets (optional):** `cp .env.example .env`, then paste a GitHub token if you want the
    GitHub MCP. Run `make setup` for a guided walkthrough.
 6. **Restart Claude Code.** You're ready — just start describing what you want to build.
 
 ## What you get out of the box
 
-**Plugins** (auto-offered on folder-trust):
+**Plugins** (auto-offered on folder-trust, or `make install-plugins`):
 - **superpowers** — disciplined workflows: brainstorming, planning, TDD, debugging, verification.
 - **skill-creator** — build your own skills.
 - **frontend-design** — distinctive, production-grade UI (by Anthropic).

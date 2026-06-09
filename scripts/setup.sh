@@ -18,13 +18,14 @@ else
 fi
 echo
 
-bold "2. Plugins (automatic on folder-trust)"
+bold "2. Plugins"
 cat <<'EOF'
-   When you trust the folder, Claude Code offers to install these for you:
-     superpowers, skill-creator, frontend-design, code-review  (official marketplace)
-     context-mode            (marketplace: mksglu/context-mode)
-     claude-mem              (marketplace: thedotmack/claude-mem)
-   Approve the prompts. Then run /plugin to confirm they're enabled.
+   These live in your global Claude setup, not in the repo — so the repo pre-configures them
+   and Claude Code installs them for you. Two ways:
+     A) Trust the folder and approve the prompts (superpowers, skill-creator, frontend-design,
+        code-review, context-mode, claude-mem), OR
+     B) Run one command:   make install-plugins
+   Confirm with /plugin  (or 'claude plugin list').
 EOF
 echo
 

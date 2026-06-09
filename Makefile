@@ -2,17 +2,20 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/sh
 
-.PHONY: help setup jupyter list-packs use-pack unuse-pack new-pack
+.PHONY: help setup install-plugins jupyter list-packs use-pack unuse-pack new-pack
 
 help: ## Show this help
 	@echo "agr-launchpad — targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | sort | \
-		awk 'BEGIN{FS=":.*?## "}{printf "  %-14s %s\n", $$1, $$2}'
+		awk 'BEGIN{FS=":.*?## "}{printf "  %-16s %s\n", $$1, $$2}'
 	@echo
 	@echo "Pack usage:  make use-pack name=ml   |   make new-pack name=ios"
 
 setup: ## Print first-time setup steps (plugins, .env, gsd, markitdown)
 	@sh scripts/setup.sh
+
+install-plugins: ## Install all six base plugins via the Claude Code CLI
+	@sh scripts/install-plugins.sh
 
 jupyter: ## Start a local Jupyter kernel for the jupyter MCP (needs uv + jupyter)
 	@sh scripts/jupyter.sh
