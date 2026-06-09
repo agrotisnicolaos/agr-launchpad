@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agr-launchpad — Getting Started</title>
+<style>
+  :root {
+    --bg: #0e1116; --panel: #161b22; --panel2: #1c2230; --ink: #e6edf3;
+    --muted: #9aa7b4; --line: #2a313c; --brand: #7c9cff; --brand2: #59d9b3;
+    --warn: #ffcf6b; --code: #0b0e13; --pill: #232a36;
+    --radius: 14px; --maxw: 880px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, pre { font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, Consolas, monospace; }
+  code { background: var(--pill); padding: 2px 6px; border-radius: 6px; font-size: 0.88em; }
+  pre {
+    background: var(--code); border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.55;
+  }
+  pre code { background: none; padding: 0; }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px; }
+
+  header.hero {
+    background: radial-gradient(1200px 400px at 20% -10%, rgba(124,156,255,.18), transparent 60%),
+                radial-gradient(900px 380px at 95% 0%, rgba(89,217,179,.14), transparent 55%);
+    border-bottom: 1px solid var(--line); padding: 56px 0 40px;
+  }
+  .badge {
+    display: inline-block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--brand2); border: 1px solid var(--line); background: var(--panel);
+    padding: 5px 11px; border-radius: 999px; margin-bottom: 18px;
+  }
+  h1 { font-size: 40px; line-height: 1.1; margin: 0 0 12px; letter-spacing: -.02em; }
+  h1 .dim { color: var(--muted); font-weight: 600; }
+  .lede { font-size: 18px; color: var(--muted); max-width: 640px; margin: 0; }
+
+  nav.toc {
+    position: sticky; top: 0; z-index: 5; background: rgba(14,17,22,.85);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); padding: 10px 0;
+  }
+  nav.toc .wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  nav.toc a {
+    font-size: 13px; color: var(--muted); padding: 5px 10px; border-radius: 8px;
+  }
+  nav.toc a:hover { background: var(--panel); color: var(--ink); text-decoration: none; }
+
+  section { padding: 38px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.01em; }
+  h2 .num { color: var(--brand); font-variant-numeric: tabular-nums; margin-right: 10px; }
+  h3 { font-size: 17px; margin: 26px 0 8px; }
+  p { margin: 10px 0; }
+  ul, ol { margin: 10px 0; padding-left: 22px; }
+  li { margin: 6px 0; }
+
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .card h4 { margin: 0 0 6px; font-size: 15px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .card .tag { font-size: 11px; color: var(--brand2); text-transform: uppercase; letter-spacing: .08em; }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps > li {
+    position: relative; padding: 4px 0 16px 46px; margin: 0;
+  }
+  .steps > li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: 0; width: 30px; height: 30px;
+    background: var(--brand); color: #0b0e13; font-weight: 700; border-radius: 50%;
+    display: grid; place-items: center; font-size: 14px;
+  }
+  .steps > li:not(:last-child)::after {
+    content: ""; position: absolute; left: 14px; top: 32px; bottom: 0; width: 2px; background: var(--line);
+  }
+
+  .note, .warn {
+    border-radius: 10px; padding: 12px 16px; margin: 16px 0; font-size: 14.5px;
+    border: 1px solid var(--line);
+  }
+  .note { background: var(--panel2); }
+  .warn { background: rgba(255,207,107,.08); border-color: rgba(255,207,107,.4); }
+  .note b, .warn b { color: var(--ink); }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  td code { white-space: nowrap; }
+
+  .kbd { background: var(--pill); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 6px; padding: 1px 7px; font-size: 12.5px; }
+
+  footer { padding: 36px 0 60px; color: var(--muted); font-size: 13.5px; }
+
+  @media (max-width: 560px) {
+    h1 { font-size: 30px; }
+    header.hero { padding: 40px 0 30px; }
+    section { padding: 30px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Claude Code starter kit</span>
+    <h1>agr-launchpad <span class="dim">— your starting place</span></h1>
+    <p class="lede">Clone it, open it, approve a few prompts. You get a solid, versatile setup —
+      the most useful skills, plugins, tools, and assistants — ready to build whatever you have in mind.</p>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#what">What this is</a>
+    <a href="#prereq">Prerequisites</a>
+    <a href="#setup">Setup</a>
+    <a href="#plugins">Plugins</a>
+    <a href="#mcp">MCP servers</a>
+    <a href="#skills">Skills &amp; agents</a>
+    <a href="#packs">Packs</a>
+    <a href="#gsd">gsd</a>
+    <a href="#markitdown">markitdown</a>
+    <a href="#workflow">A first project</a>
+    <a href="#trouble">Troubleshooting</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="what">
+    <h2><span class="num">1</span>What this is</h2>
+    <p>agr-launchpad is a <b>starter repository for <a href="https://claude.com/claude-code">Claude Code</a></b>
+      — Anthropic's AI coding assistant that lives in your terminal and editor. Instead of starting
+      every project from an empty folder, you start from here: a curated, battle-tested foundation that
+      makes Claude noticeably more capable and disciplined.</p>
+    <p>Two layers:</p>
+    <div class="grid">
+      <div class="card">
+        <span class="tag">Base</span>
+        <h4>The launchpad</h4>
+        <p>Universal, project-agnostic. Great skills, the best general plugins, helpful assistants,
+          and live tools. This is everything you need to start <em>anything</em>.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Packs</span>
+        <h4>Project add-ons</h4>
+        <p>When you start a <em>specific</em> kind of project (ML, an iOS app, a journal…), you install
+          a pack that layers on the right extra capability. The base stays clean.</p>
+      </div>
+    </div>
+    <p class="note">You don't need to be a programmer to use this. If you can clone a folder and click
+      a few “Yes” buttons, you can get set up. The rest is just talking to Claude in plain English.</p>
+  </section>
+
+  <section id="prereq">
+    <h2><span class="num">2</span>Prerequisites</h2>
+    <table>
+      <tr><th>You need</th><th>Why</th><th>Get it</th></tr>
+      <tr><td><b>Claude Code</b></td><td>The assistant itself</td><td><a href="https://claude.com/claude-code">claude.com/claude-code</a></td></tr>
+      <tr><td><b>Node.js</b> (LTS)</td><td>Runs some plugins &amp; MCP servers</td><td><a href="https://nodejs.org">nodejs.org</a></td></tr>
+      <tr><td><b>git</b></td><td>To clone this repo</td><td>Built into macOS; <a href="https://git-scm.com">git-scm.com</a> on Windows</td></tr>
+      <tr><td>uv <i>(optional)</i></td><td>Only for live Jupyter notebooks</td><td><a href="https://astral.sh/uv">astral.sh/uv</a></td></tr>
+    </table>
+  </section>
+
+  <section id="setup">
+    <h2><span class="num">3</span>Setup — about 5 clicks</h2>
+    <ol class="steps">
+      <li><b>Clone the repo and open the folder</b> in Claude Code (or in VS Code with the Claude Code extension).
+        <pre><code>git clone &lt;your-repo-url&gt; agr-launchpad
+cd agr-launchpad</code></pre>
+      </li>
+      <li><b>Trust the folder.</b> Claude Code asks “Do you trust the files in this folder?” → click
+        <span class="kbd">Yes, I trust</span>. This unlocks the bundled setup.</li>
+      <li><b>Approve the plugins.</b> Claude offers to add two marketplaces and install six plugins.
+        Approve them. (Details in <a href="#plugins">section 4</a>.)</li>
+      <li><b>Approve the MCP servers.</b> Claude asks about <code>context7</code>, <code>github</code>,
+        and <code>jupyter</code>. Approve them. (Details in <a href="#mcp">section 5</a>.)</li>
+      <li><b>Add secrets (optional).</b> Copy the example env file and fill in a GitHub token only if
+        you want the GitHub integration:
+        <pre><code>cp .env.example .env</code></pre>
+        Prefer a guided walkthrough? Run <code>make setup</code>.</li>
+      <li><b>Restart Claude Code</b> so everything loads. Done — start describing what you want to build.</li>
+    </ol>
+    <p class="note"><b>Why the approvals?</b> Claude Code never installs plugins or connects tools
+      behind your back — you approve each one once. That's a safety feature, not a hurdle.</p>
+  </section>
+
+  <section id="plugins">
+    <h2><span class="num">4</span>The plugins</h2>
+    <p>These install automatically when you trust the folder and approve the prompts.</p>
+    <div class="grid">
+      <div class="card"><h4>superpowers</h4><p>Disciplined workflows: brainstorming before coding,
+        writing plans, test-driven development, systematic debugging, verifying before claiming done.</p></div>
+      <div class="card"><h4>skill-creator</h4><p>Build your own custom skills when you find yourself
+        repeating a task. Claude scaffolds and tests them for you.</p></div>
+      <div class="card"><h4>frontend-design</h4><p>Anthropic's skill for distinctive, production-grade
+        user interfaces — avoids the generic “AI look”.</p></div>
+      <div class="card"><h4>code-review</h4><p><code>/code-review</code> checks your changes for bugs and
+        cleanups. <code>/code-review ultra</code> runs a deep multi-agent review in the cloud.</p></div>
+      <div class="card"><h4>context-mode</h4><p>Keeps large command output out of the conversation so
+        Claude stays fast and focused on long tasks.</p></div>
+      <div class="card"><h4>claude-mem</h4><p>Persistent memory — Claude remembers what you worked on
+        across sessions, so you don't re-explain your project every time.</p></div>
+    </div>
+    <p class="note">After setup, type <code>/plugin</code> in Claude Code to confirm they're all enabled.</p>
+  </section>
+
+  <section id="mcp">
+    <h2><span class="num">5</span>The MCP servers</h2>
+    <p>MCP servers give Claude live connections to the outside world. Three ship in <code>.mcp.json</code>:</p>
+    <table>
+      <tr><th>Server</th><th>What it does</th><th>Setup</th></tr>
+      <tr><td><b>context7</b></td><td>Pulls the <i>current</i> docs for any library or framework, so
+        Claude doesn't rely on stale training data.</td><td>None — works immediately.</td></tr>
+      <tr><td><b>github</b></td><td>Reads and manages your GitHub repos, issues, and pull requests.</td>
+        <td>Needs a token — see below.</td></tr>
+      <tr><td><b>jupyter</b></td><td>Live notebook kernel: Claude can run and edit <code>.ipynb</code> cells.</td>
+        <td>Run <code>make jupyter</code> when you want it.</td></tr>
+    </table>
+    <h3>Giving GitHub a token</h3>
+    <ol>
+      <li>Create a token at <a href="https://github.com/settings/tokens">github.com/settings/tokens</a>
+        (a fine-grained token with minimal access is best).</li>
+      <li>Open <code>.env</code> and paste it: <code>GITHUB_PAT=ghp_your_token_here</code></li>
+      <li>Restart Claude Code.</li>
+    </ol>
+    <p class="warn"><b>Your token stays private.</b> <code>.env</code> is git-ignored — it is never
+      committed or shared. Leave <code>GITHUB_PAT</code> blank if you don't want the GitHub features yet.</p>
+  </section>
+
+  <section id="skills">
+    <h2><span class="num">6</span>Bundled skills &amp; agents</h2>
+    <p>These live right in the repo (<code>.claude/skills/</code> and <code>.claude/agents/</code>) and
+      need no install. Skills are invoked with a slash, like <code>/grill-me</code>; agents are
+      specialists Claude dispatches automatically.</p>
+    <h3>Skills</h3>
+    <div class="grid">
+      <div class="card"><h4>/grill-me</h4><p>Interviews you relentlessly about a plan or design until
+        every decision is resolved. Great before building something big.</p></div>
+      <div class="card"><h4>coding-standards</h4><p>Baseline conventions for clean, readable code.</p></div>
+      <div class="card"><h4>error-handling</h4><p>Patterns for handling failures properly instead of
+        hiding them.</p></div>
+      <div class="card"><h4>html</h4><p>Produces polished single-file HTML pages (like this one).</p></div>
+      <div class="card"><h4>dashboard-builder</h4><p>Spins up quick local dashboards from your data.</p></div>
+      <div class="card"><h4>code-tour</h4><p>Walks you through an unfamiliar codebase, section by section.</p></div>
+      <div class="card"><h4>skill-stocktake</h4><p>Audits your installed skills and flags gaps or drift.</p></div>
+    </div>
+    <h3>Agents</h3>
+    <p><code>architect</code>, <code>code-architect</code>, and <code>code-explorer</code> — assistants
+      that plan system designs and map out existing code before changes are made.</p>
+  </section>
+
+  <section id="packs">
+    <h2><span class="num">7</span>Packs — add capability for a project</h2>
+    <p>The base is deliberately lean. When you start a particular kind of project, install a <b>pack</b>:
+      a bundle of project-specific skills, agents, tools, and rules.</p>
+    <pre><code>make list-packs           # see what's available
+make new-pack name=ml     # create a new pack from the template
+make use-pack name=ml     # install a pack into your setup
+make unuse-pack name=ml   # remove it again</code></pre>
+    <p>Installing a pack copies its skills and agents into place, adds any tools it needs, and appends
+      its rules to <code>CLAUDE.md</code> — all reversible. Only the <code>_template</code> ships filled
+      in; it's a worked example you copy to build your own.</p>
+    <table>
+      <tr><th>Planned pack</th><th>Would add</th></tr>
+      <tr><td><code>ml</code></td><td>data &amp; machine-learning skills, evaluation agents, notebook conventions</td></tr>
+      <tr><td><code>ios</code></td><td>Swift / SwiftUI patterns, on-device model skills, build helpers</td></tr>
+      <tr><td><code>journal</code></td><td>journaling &amp; writing skills, daily-note templates, reflection prompts</td></tr>
+      <tr><td><code>web</code></td><td>front-end patterns, component &amp; accessibility agents</td></tr>
+    </table>
+    <p class="note">Building these out is the fun part — and it's where this kit grows with you. See
+      <code>packs/README.md</code> for the full guide.</p>
+  </section>
+
+  <section id="gsd">
+    <h2><span class="num">8</span>gsd (installed separately)</h2>
+    <p><b>gsd</b> (“get stuff done”) is a powerful planning toolkit — it breaks big goals into phases,
+      plans, and verified steps. Unlike the plugins above, it installs globally into your Claude setup
+      (<code>~/.claude</code>) rather than from this repo, so it works across <em>all</em> your projects.</p>
+    <p>Install it from its own project per its README. Once installed, its <code>/gsd-*</code> commands
+      appear automatically. It's optional — everything else here works without it.</p>
+  </section>
+
+  <section id="markitdown">
+    <h2><span class="num">9</span>markitdown (turn any file into Markdown)</h2>
+    <p>The <a href="https://github.com/BioInfo/vscode-markitdown">markitdown</a> VS Code extension converts
+      PDFs, Word/Excel/PowerPoint, HTML, and images into clean Markdown — perfect for feeding documents
+      to Claude.</p>
+    <p>When you open this folder in VS Code, it's recommended automatically (via
+      <code>.vscode/extensions.json</code>) — just click <span class="kbd">Install</span>. Or install it
+      from the linked repository.</p>
+  </section>
+
+  <section id="workflow">
+    <h2><span class="num">10</span>Your first project</h2>
+    <p>A natural flow once you're set up:</p>
+    <ol>
+      <li>Tell Claude what you want to build. For anything non-trivial, it'll <b>brainstorm</b> with you first.</li>
+      <li>Want to pressure-test your idea? Type <code>/grill-me</code> and defend it.</li>
+      <li>Claude writes a <b>plan</b>, then implements it with <b>tests</b> (superpowers keeps it honest).</li>
+      <li>Before you ship, run <code>/code-review</code> — or <code>/code-review ultra</code> for the deep pass.</li>
+      <li>Need a domain boost partway through? <code>make use-pack name=&lt;pack&gt;</code> and keep going.</li>
+    </ol>
+    <p class="note">You mostly just talk. The skills and plugins make Claude ask the right questions,
+      plan before coding, and check its own work — so you get further with less back-and-forth.</p>
+  </section>
+
+  <section id="trouble">
+    <h2><span class="num">11</span>Troubleshooting &amp; FAQ</h2>
+    <h3>I didn't get the plugin install prompts</h3>
+    <p>Make sure you <b>trusted the folder</b>, then restart Claude Code. You can also run
+      <code>/plugin</code> and add them manually, or <code>make setup</code> for the steps.</p>
+    <h3>The GitHub tools aren't working</h3>
+    <p>Check that <code>.env</code> exists and <code>GITHUB_PAT</code> is filled in, then restart.</p>
+    <h3>Jupyter says it can't connect</h3>
+    <p>Run <code>make jupyter</code> in a terminal and leave it running; it starts the kernel the
+      <code>jupyter</code> MCP talks to.</p>
+    <h3>Is my data safe to share this repo?</h3>
+    <p>Yes — no secrets are committed. <code>.env</code> is git-ignored. Double-check it's not staged
+      before pushing anywhere public.</p>
+    <h3>Can I add my own skills?</h3>
+    <p>Absolutely — drop a folder in <code>.claude/skills/</code>, or ask Claude to use
+      <b>skill-creator</b>. For project-specific ones, put them in a pack.</p>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p>agr-launchpad · built on Claude Code · see <code>README.md</code> and
+    <code>ATTRIBUTIONS.md</code> in the repo. Credits to the upstream plugin, MCP, and tool authors.</p>
+</footer>
+
+</body>
+</html>
