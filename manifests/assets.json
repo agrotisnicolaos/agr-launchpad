@@ -24,6 +24,7 @@
     ],
     "skills": [
       { "id": "grill-me", "path": ".claude/skills/grill-me/SKILL.md", "domain": "workflow" },
+      { "id": "explain-agr", "path": ".claude/skills/explain-agr/SKILL.md", "domain": "learning", "origin": "first-party" },
       { "id": "coding-standards", "path": ".claude/skills/coding-standards/SKILL.md", "domain": "foundation", "origin": "ECC" },
       { "id": "error-handling", "path": ".claude/skills/error-handling/SKILL.md", "domain": "foundation", "origin": "ECC" },
       { "id": "secure-coding", "path": ".claude/skills/secure-coding/SKILL.md", "domain": "security", "origin": "ECC (upstream name: security-review)" },

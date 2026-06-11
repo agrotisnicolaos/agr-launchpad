@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is a Claude Plugin? — A Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Karla:wght@400;500;700&family=Spline+Sans+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAF4E8;
+    --paper-deep: #F3EAD7;
+    --ink: #2B2117;
+    --ink-soft: #5C4F40;
+    --terracotta: #C7502F;
+    --terracotta-soft: #F4DCD2;
+    --moss: #3E5C45;
+    --moss-soft: #DDE7DC;
+    --gold: #B98A2D;
+    --rule: #D9CDB6;
+    --radius: 14px;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Karla", "Helvetica Neue", sans-serif;
+    --mono: "Spline Sans Mono", "SF Mono", Menlo, monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--body);
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+    background-image: radial-gradient(var(--rule) 0.8px, transparent 0.8px);
+    background-size: 26px 26px;
+  }
+
+  .page {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ---------- staggered entrance ---------- */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise { animation: rise 0.7s cubic-bezier(.22,1,.36,1) both; }
+  .d1 { animation-delay: .05s } .d2 { animation-delay: .15s }
+  .d3 { animation-delay: .25s } .d4 { animation-delay: .35s }
+  @media (prefers-reduced-motion: reduce) { .rise { animation: none; } }
+
+  /* ---------- hero ---------- */
+  header {
+    padding: 72px 0 48px;
+    text-align: left;
+    position: relative;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    border: 1.5px solid var(--terracotta);
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 999px;
+    background: var(--paper);
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    line-height: 1.05;
+    margin: 22px 0 16px;
+    letter-spacing: -0.01em;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .lede {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 560px;
+  }
+
+  /* ---------- generic section bits ---------- */
+  section { margin-top: 64px; }
+  h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  h2 .num {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--paper);
+    background: var(--ink);
+    border-radius: 8px;
+    padding: 3px 10px;
+    transform: translateY(-4px);
+  }
+  .divider {
+    border: none;
+    border-top: 2px dashed var(--rule);
+    margin: 56px 0 0;
+  }
+
+  /* ---------- hook ---------- */
+  .hook-list { list-style: none; margin: 18px 0; }
+  .hook-list li {
+    padding: 12px 16px 12px 44px;
+    position: relative;
+    background: var(--paper-deep);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 1px solid var(--rule);
+  }
+  .hook-list li::before {
+    content: "✦";
+    position: absolute;
+    left: 16px;
+    color: var(--terracotta);
+    font-weight: 700;
+  }
+  .takeaway {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    font-family: var(--display);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.45;
+    position: relative;
+    margin-top: 24px;
+  }
+  .takeaway::before {
+    content: "IN ONE SENTENCE";
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  /* ---------- building blocks ---------- */
+  .blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .block {
+    background: #fff;
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    box-shadow: 4px 4px 0 var(--rule);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .block:hover {
+    transform: translate(-2px,-2px);
+    box-shadow: 7px 7px 0 var(--terracotta-soft);
+  }
+  .block h3 {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .block .emoji { font-size: 1.2rem; }
+  .block p { font-size: 0.93rem; color: var(--ink-soft); }
+  .block .analogy {
+    display: block;
+    margin-top: 8px;
+    font-style: italic;
+    color: var(--moss);
+    font-size: 0.88rem;
+  }
+
+  .tree {
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    background: var(--ink);
+    color: #EFE6D2;
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    overflow-x: auto;
+    line-height: 1.9;
+  }
+  .tree .hl { color: #F0A985; font-weight: 600; }
+  .tree .cm { color: #9DB8A0; }
+
+  .note {
+    margin-top: 18px;
+    padding: 14px 18px;
+    background: var(--moss-soft);
+    border-left: 4px solid var(--moss);
+    border-radius: 0 10px 10px 0;
+    font-size: 0.95rem;
+  }
+
+  /* ---------- flow ---------- */
+  .flowchain {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 26px;
+    line-height: 2;
+  }
+  .flowchain .arrow { color: var(--terracotta); font-weight: 600; }
+
+  .steps { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 22px 58px;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    color: var(--paper);
+    font-family: var(--display);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 17px; top: 40px; bottom: 4px;
+    width: 2px;
+    background: var(--rule);
+  }
+  .steps strong { color: var(--terracotta); }
+
+  .buys {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .buy {
+    background: var(--moss-soft);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 0.95rem;
+  }
+  .buy strong { color: var(--moss); display: block; margin-bottom: 4px; font-size: 1rem; }
+
+  /* ---------- wild ---------- */
+  .wild { list-style: none; }
+  .wild li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px dashed var(--rule);
+    align-items: baseline;
+  }
+  .wild .name {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--terracotta);
+    flex: 0 0 200px;
+  }
+  .wild p { font-size: 0.95rem; color: var(--ink-soft); }
+  @media (max-width: 560px) {
+    .wild li { flex-direction: column; gap: 4px; }
+    .wild .name { flex-basis: auto; }
+  }
+
+  /* ---------- do / don't ---------- */
+  .dodont {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1.5px solid var(--ink);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #fff;
+  }
+  .dodont th {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    text-align: left;
+    padding: 14px 18px;
+  }
+  .dodont th.do { background: var(--moss-soft); color: var(--moss); }
+  .dodont th.dont { background: var(--terracotta-soft); color: var(--terracotta); }
+  .dodont td {
+    padding: 12px 18px;
+    font-size: 0.93rem;
+    border-top: 1px solid var(--rule);
+    vertical-align: top;
+    width: 50%;
+  }
+  .tablewrap { overflow-x: auto; border-radius: var(--radius); box-shadow: 4px 4px 0 var(--rule); }
+
+  /* ---------- references ---------- */
+  .refs { list-style: none; }
+  .refs li { margin-bottom: 12px; }
+  .refs a {
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration-color: var(--terracotta);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+  .refs a:hover { color: var(--terracotta); }
+  .refs span { display: block; font-size: 0.9rem; color: var(--ink-soft); }
+
+  footer {
+    margin-top: 72px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="rise d1">
+    <span class="kicker">Field Guide · Claude Code</span>
+    <h1>What is a<br>Claude <em>plugin</em>?</h1>
+    <p class="lede">A beginner-first tour of the one-folder packages that teach Claude Code new tricks — no prior knowledge needed.</p>
+  </header>
+
+  <section class="rise d2" aria-labelledby="hook">
+    <h2 id="hook"><span class="num">01</span>Why should you care?</h2>
+    <p>You're probably using plugins already without thinking about them. In a typical session:</p>
+    <ul class="hook-list">
+      <li><strong>A memory plugin</strong> remembers what you worked on last night and briefs Claude this morning</li>
+      <li><strong>A workflow plugin</strong> nudges Claude to follow disciplined habits like test-driven development</li>
+      <li><strong>A design plugin</strong> gives Claude visual taste when you ask for a web page</li>
+    </ul>
+    <blockquote class="takeaway">
+      A Claude plugin is one installable folder that teaches Claude Code new tricks — knowledge, helpers, automatic reactions, and connections to outside tools — all behind a single on/off switch.
+    </blockquote>
+  </section>
+
+  <hr class="divider">
+
+  <section class="rise d3" aria-labelledby="blocks">
+    <h2 id="blocks"><span class="num">02</span>The building blocks</h2>
+    <p style="margin-bottom:20px">Out of the box, Claude Code is a capable generalist. A plugin upgrades it — and one plugin can bundle up to five kinds of upgrades:</p>
+
+    <div class="blocks">
+      <div class="block">
+        <h3><span class="emoji">📇</span>Skills</h3>
+        <p>Written instructions Claude reads only when relevant.</p>
+        <span class="analogy">Like recipe cards in a kitchen drawer — out of the way until the right dish is ordered.</span>
+      </div>
+      <div class="block">
+        <h3><span class="emoji">👷</span>Agents</h3>
+        <p>Pre-configured specialist coworkers Claude can hand sub-tasks to.</p>
+        <span class="analogy">Like a contractor calling in an electrician instead of doing the wiring himself.</span>
+      </div>
+      <div class="block">
+        <h3><span class="emoji">⚡</span>Commands</h3>
+        <p>Shortcuts you type as <code>/something</code> to trigger a whole workflow.</p>
+        <span class="analogy">Like speed-dial — one button, a whole routine runs.</span>
+      </div>
+      <div class="block">
+        <h3><span class="emoji">🔔</span>Hooks</h3>
+        <p>Automatic reactions: “when X happens, always do Y.”</p>
+        <span class="analogy">Like a doorbell — nobody has to remember to announce visitors.</span>
+      </div>
+      <div class="block">
+        <h3><span class="emoji">📞</span>MCP servers</h3>
+        <p>Phone lines from Claude to outside tools — GitHub, your browser, your database.</p>
+        <span class="analogy">Like giving your assistant the office phone directory.</span>
+      </div>
+      <div class="block">
+        <h3><span class="emoji">🏷️</span>The manifest</h3>
+        <p>A small label file (<code>plugin.json</code>) saying “here's my name, version, and what's inside.”</p>
+        <span class="analogy">Like the ingredients label on a box.</span>
+      </div>
+    </div>
+
+    <pre class="tree" aria-label="Plugin folder structure"><span class="hl">PLUGIN</span> (one folder)
+├── plugin.json   <span class="cm">→ the label: name, version, contents</span>
+├── skills/       <span class="cm">→ recipe cards, read on demand</span>
+├── agents/       <span class="cm">→ specialist coworkers</span>
+├── commands/     <span class="cm">→ /speed-dial shortcuts</span>
+├── hooks/        <span class="cm">→ doorbells ("when X, do Y")</span>
+└── mcp servers/  <span class="cm">→ phone lines to outside tools</span></pre>
+
+    <p class="note">A plugin doesn't need all five — many ship just one skill. The point is the <strong>packaging</strong>: one folder, one install, one uninstall. Plugins live in <strong>marketplaces</strong> — catalogs (usually just a GitHub repo) you browse with <code>/plugin</code>. Like an app store, except anyone can run one.</p>
+  </section>
+
+  <hr class="divider">
+
+  <section class="rise d4" aria-labelledby="together">
+    <h2 id="together"><span class="num">03</span>Putting it together</h2>
+
+    <div class="flowchain">
+      author writes folder <span class="arrow">→</span> publishes to a marketplace <span class="arrow">→</span> you run /plugin install <span class="arrow">→</span> Claude reads the manifest <span class="arrow">→</span> everything switches on
+    </div>
+
+    <p style="margin-bottom:18px">Walking through the <strong>memory plugin</strong> from the hook:</p>
+    <ol class="steps">
+      <li>Someone wrote a “memory for Claude” plugin and published it to a marketplace</li>
+      <li>You installed it once with <strong>/plugin</strong></li>
+      <li>Its <strong>hook</strong> rang last night when your session ended → it saved a summary</li>
+      <li>This morning, another hook injected those memories before Claude read your message</li>
+      <li>Its <strong>skill</strong> waits in the drawer in case you ask “did we solve this before?”</li>
+      <li>You never configured any of this individually — installing the plugin wired it all up</li>
+    </ol>
+
+    <div class="buys">
+      <div class="buy"><strong>One-step setup</strong>A whole workflow — hooks, skills, tools — installs and uninstalls as a unit, instead of hand-editing config files.</div>
+      <div class="buy"><strong>Shareability</strong>Your whole team gets identical Claude behavior by installing the same plugin.</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section aria-labelledby="wild">
+    <h2 id="wild"><span class="num">04</span>Successful examples in the wild</h2>
+    <ul class="wild">
+      <li><span class="name">obra/superpowers</span><p>The most popular community plugin — enforces disciplined workflows like test-driven development.</p></li>
+      <li><span class="name">anthropics/skills</span><p>Anthropic's own official collection: document handling, spreadsheets, PDFs.</p></li>
+      <li><span class="name">Trail of Bits</span><p>A respected security firm packaged 40+ of their audit practices as plugins.</p></li>
+      <li><span class="name">agr-launchpad</span><p>A curated starter kit bundling plugins and skills — proof that a plugin collection can be a product in itself.</p></li>
+    </ul>
+  </section>
+
+  <hr class="divider">
+
+  <section aria-labelledby="dodont">
+    <h2 id="dodont"><span class="num">05</span>Best practices &amp; common mistakes</h2>
+    <div class="tablewrap">
+      <table class="dodont">
+        <thead>
+          <tr><th class="do" scope="col">✅ Do</th><th class="dont" scope="col">❌ Don't</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Install from sources you trust — plugins run code and read your files</td>
+            <td>Treat marketplaces like a vetted app store; anyone can publish</td>
+          </tr>
+          <tr>
+            <td>Write skill descriptions that say exactly <em>when</em> to trigger</td>
+            <td>Write vague descriptions — Claude won't know when to use the skill</td>
+          </tr>
+          <tr>
+            <td>Keep one plugin = one coherent purpose</td>
+            <td>Cram unrelated tools into a mega-plugin that's hard to audit</td>
+          </tr>
+          <tr>
+            <td>Disable plugins you stopped using</td>
+            <td>Let a dozen idle plugins inflate every session's startup context</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section aria-labelledby="refs">
+    <h2 id="refs"><span class="num">06</span>Go deeper</h2>
+    <ul class="refs">
+      <li>
+        <a href="https://code.claude.com/docs/en/plugins">Claude Code docs — Plugins</a>
+        <span>The official guide to installing and building them.</span>
+      </li>
+      <li>
+        <a href="https://www.anthropic.com/news/claude-code-plugins">Anthropic — Customize Claude Code with plugins</a>
+        <span>The launch announcement; a good big-picture read.</span>
+      </li>
+      <li>
+        <a href="https://code.claude.com/docs/en/plugin-marketplaces">Claude Code docs — Plugin marketplaces</a>
+        <span>How catalogs work and how to run your own.</span>
+      </li>
+    </ul>
+  </section>
+
+  <footer>FIELD GUIDE №1 · MADE WITH CLAUDE CODE</footer>
+</div>
+</body>
+</html>
