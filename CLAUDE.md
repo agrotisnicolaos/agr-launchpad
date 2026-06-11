@@ -64,6 +64,54 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 
+---
+
+## Assets — when to reach for what
+
+This kit's power is its assets. Skill/agent descriptions carry the full triggers; this section only
+resolves the ambiguities between them. **Reach for the matching asset instead of working bare.**
+
+### Clarify intent (before building)
+- **superpowers:brainstorming** — Claude-initiated requirements exploration before any creative work.
+- **grill-me** (bundled, canonical over the context-mode plugin's copy) — user-initiated: the user
+  has a plan and wants to be interrogated about it branch-by-branch.
+
+### Explore, then design
+- **code-explorer** agent — dispatch to trace how an existing feature works (keeps exploration
+  tokens out of the main context). For in-thread structural search, claude-mem's smart-explore.
+- **architect** agent — system-level: greenfield design, stack selection, scalability, ADRs.
+- **code-architect** agent — feature-level: implementation blueprint inside an existing codebase.
+
+### While writing code
+- **coding-standards** — baseline naming/readability/immutability conventions, any language.
+- **error-handling** — any code touching errors, retries, or API failure paths.
+- **secure-coding** — proactively when writing auth, user input handling, secrets, API endpoints,
+  or payment/sensitive features. Before merging, run the built-in `/security-review` on the diff.
+- **api-design** — designing or reviewing any HTTP/REST API contract.
+- **backend-patterns** — server-side structure: services, data access, caching, queues.
+- **frontend-patterns** — frontend logic: components, state, data fetching, performance.
+- Process discipline (TDD, debugging, verification, planning) belongs to **superpowers**; multi-phase
+  project planning belongs to **gsd**.
+
+### Output & visual verification
+- **frontend-design** plugin — visual taste for any UI work.
+- **html** — standalone single-file artifacts: reports, charts, offline dashboards.
+- **webapp-testing** — run a local web app, screenshot it, read console logs. **Never claim UI work
+  is done without rendering and looking at it** — this skill (or the chrome-devtools MCP, if
+  approved) is how.
+- **code-tour** — persona-targeted `.tour` walkthroughs (played via the CodeTour VS Code extension).
+- **jupyter** MCP — iterative data work and plots in a live kernel (`make jupyter` first).
+
+### External knowledge & repo operations
+- **context7** MCP — ALWAYS use for library/framework/API questions instead of answering from
+  training memory; docs change faster than models.
+- **github** MCP — issues, PRs, repos (needs `GITHUB_PAT` exported in the launch shell).
+
+### Kit maintenance
+- **skill-creator** plugin — author new skills (follow `packs/_template`'s frontmatter bar:
+  descriptions must say precisely WHEN to trigger).
+- **skill-stocktake** — audit the skill inventory after adding/removing packs or skills.
+
 <!-- AGR-LAUNCHPAD:PACKS:START -->
 <!-- Installed packs append their rulebook fragments below this line. Managed by scripts/use-pack.sh — do not edit by hand. -->
 <!-- AGR-LAUNCHPAD:PACKS:END -->

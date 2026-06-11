@@ -1,0 +1,13 @@
+{
+  "id": "ops",
+  "name": "Ops / Observability Pack",
+  "version": "0.1.0",
+  "description": "Operations and observability assets: build Grafana/SigNoz-style monitoring dashboards that answer real operator questions. Platform-specific by nature, so it lives in a pack rather than the universal base.",
+  "skills": ["dashboard-builder"],
+  "agents": [],
+  "mcpServers": [],
+  "requires": {
+    "plugins": [],
+    "notes": "Assumes access to a dashboard platform (Grafana, SigNoz, or similar)."
+  }
+}

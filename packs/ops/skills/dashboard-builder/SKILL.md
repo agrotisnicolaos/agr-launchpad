@@ -103,6 +103,5 @@ Every panel should answer a real question. If it does not, remove it.
 
 ## Related Skills
 
-- `research-ops`
-- `backend-patterns`
-- `terminal-ops`
+- `backend-patterns` (base kit) — service-side patterns behind the metrics
+- `html` (base kit) — for standalone/no-server dashboards instead of Grafana/SigNoz

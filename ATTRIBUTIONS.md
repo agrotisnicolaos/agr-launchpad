@@ -8,17 +8,25 @@ MCP servers, and tools. Credit and licenses below.
 | Skill | Origin | Notes |
 | --- | --- | --- |
 | `grill-me` | Adapted from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT) | Relentless plan/design interview. |
-| `coding-standards` | ECC community skills | Universal code conventions. |
-| `error-handling` | ECC community skills | Defensive error-handling patterns. |
-| `code-tour` | ECC community skills | Guided codebase walkthroughs. |
-| `skill-stocktake` | ECC community skills | Skill inventory/audit. |
+| `coding-standards` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Universal code conventions, trimmed to a language-agnostic core. |
+| `error-handling` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Defensive error-handling patterns. |
+| `secure-coding` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Upstream name `security-review`; renamed to avoid clashing with Claude Code's built-in `/security-review`. |
+| `api-design` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | REST API design conventions. |
+| `backend-patterns` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Server-side architecture patterns. |
+| `frontend-patterns` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Frontend engineering patterns. |
+| `webapp-testing` | [anthropics/skills](https://github.com/anthropics/skills) | Playwright-driven UI verification; license in the skill's `LICENSE.txt`. |
+| `code-tour` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Guided codebase walkthroughs. |
+| `skill-stocktake` | [ECC](https://github.com/affaan-m/ECC) community skills (MIT) | Skill inventory/audit. |
 | `html` | first-party | Single-file styled HTML artifacts. |
-| `dashboard-builder` | first-party | Quick local dashboards. |
+
+Pack skills: `dashboard-builder` (ECC, MIT — Grafana/SigNoz operator dashboards) lives in
+`packs/ops/`, installed only via `make use-pack name=ops`.
 
 ## Vendored agents (in `.claude/agents/`)
 
-`architect`, `code-architect`, `code-explorer` — adapted from ECC community agents. Domain-agnostic
-planning/exploration subagents.
+`architect`, `code-architect`, `code-explorer` — adapted from ECC community agents and reworked to
+be domain-agnostic (architect = system-level design/ADRs, code-architect = feature blueprints,
+code-explorer = existing-code tracing).
 
 ## External plugins (installed via Claude Code, not bundled here)
 
@@ -30,15 +38,22 @@ planning/exploration subagents.
 
 Each plugin is governed by its own upstream license.
 
+For deeper security auditing beyond the bundled `secure-coding` skill and the built-in
+`/security-review`, the [trailofbits/skills](https://github.com/trailofbits/skills) marketplace
+(Trail of Bits) is a credible opt-in: `claude plugin marketplace add trailofbits/skills`.
+
 ## MCP servers (referenced in `.mcp.json`)
 
 - **context7** — Upstash `@upstash/context7-mcp`.
-- **github** — `@modelcontextprotocol/server-github`.
+- **github** — [GitHub's official hosted MCP server](https://github.com/github/github-mcp-server).
 - **jupyter** — Datalayer [`jupyter-mcp-server`](https://github.com/datalayer/jupyter-mcp-server) (BSD-3-Clause).
+- **chrome-devtools** — [ChromeDevTools/chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Apache-2.0), optional.
 
 ## Tools
 
 - **vscode-markitdown** — [BioInfo/vscode-markitdown](https://github.com/BioInfo/vscode-markitdown),
   a VS Code wrapper around Microsoft's [markitdown](https://github.com/microsoft/markitdown).
+- **CodeTour** — [microsoft/codetour](https://github.com/microsoft/codetour) VS Code extension
+  (`vsls-contrib.codetour`); plays the `.tour` files the `code-tour` skill produces.
 
 If any attribution here is incomplete or incorrect, please open an issue — it will be fixed promptly.

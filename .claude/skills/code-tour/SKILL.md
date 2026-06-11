@@ -35,9 +35,9 @@ Examples:
 | Instead of code-tour | Use |
 | --- | --- |
 | A one-off explanation in chat is enough | answer directly |
-| The user wants prose docs, not a `.tour` artifact | `documentation-lookup` or repo docs editing |
+| The user wants prose docs, not a `.tour` artifact | repo docs editing |
 | The task is implementation or refactoring | do the implementation work |
-| The task is broad codebase onboarding without a tour artifact | `codebase-onboarding` |
+| The task is broad codebase exploration without a tour artifact | the `code-explorer` agent |
 
 ## Workflow
 
@@ -230,7 +230,11 @@ The tour should feel like a path, not an inventory.
 
 ## Related Skills
 
-- `codebase-onboarding`
 - `coding-standards`
-- `council`
+- `code-explorer` agent — explore the code before touring it
 - official upstream format: `microsoft/codetour`
+
+## Playing Tours
+
+`.tour` files are played by the **CodeTour** VS Code extension (`vsls-contrib.codetour`) — it is in
+this repo's recommended extensions; without it the output is just a JSON file.

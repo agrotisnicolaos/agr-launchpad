@@ -12,7 +12,7 @@ This skill is the shared floor, not the detailed framework playbook.
 
 - Use `frontend-patterns` for React, state, forms, rendering, and UI architecture.
 - Use `backend-patterns` or `api-design` for repository/service layers, endpoint design, validation, and server-specific concerns.
-- Use `rules/common/coding-style.md` when you need the shortest reusable rule layer instead of a full skill walkthrough.
+- Use `error-handling` for typed errors, retries, and failure-path patterns.
 
 ## When to Activate
 
@@ -68,7 +68,7 @@ Do not use this skill as the primary source for:
 
 ```typescript
 // PASS: GOOD: Descriptive names
-const marketSearchQuery = 'election'
+const userSearchQuery = 'invoices'
 const isUserAuthenticated = true
 const totalRevenue = 1000
 
@@ -82,12 +82,12 @@ const x = 1000
 
 ```typescript
 // PASS: GOOD: Verb-noun pattern
-async function fetchMarketData(marketId: string) { }
+async function fetchUserData(userId: string) { }
 function calculateSimilarity(a: number[], b: number[]) { }
 function isValidEmail(email: string): boolean { }
 
 // FAIL: BAD: Unclear or noun-only
-async function market(id: string) { }
+async function user(id: string) { }
 function similarity(a, b) { }
 function email(e) { }
 ```
@@ -110,43 +110,22 @@ items.push(newItem)     // BAD
 
 ### Error Handling
 
-```typescript
-// PASS: GOOD: Comprehensive error handling
-async function fetchData(url: string) {
-  try {
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error('Fetch failed:', error)
-    throw new Error('Failed to fetch data')
-  }
-}
-
-// FAIL: BAD: No error handling
-async function fetchData(url) {
-  const response = await fetch(url)
-  return response.json()
-}
-```
+Handle the failure path of every I/O call — but take the patterns (typed errors, Result types,
+retries with backoff) from the dedicated `error-handling` skill rather than improvising here.
 
 ### Async/Await Best Practices
 
 ```typescript
 // PASS: GOOD: Parallel execution when possible
-const [users, markets, stats] = await Promise.all([
+const [users, orders, stats] = await Promise.all([
   fetchUsers(),
-  fetchMarkets(),
+  fetchOrders(),
   fetchStats()
 ])
 
 // FAIL: BAD: Sequential when unnecessary
 const users = await fetchUsers()
-const markets = await fetchMarkets()
+const orders = await fetchOrders()
 const stats = await fetchStats()
 ```
 
@@ -154,204 +133,36 @@ const stats = await fetchStats()
 
 ```typescript
 // PASS: GOOD: Proper types
-interface Market {
+interface Order {
   id: string
   name: string
-  status: 'active' | 'resolved' | 'closed'
+  status: 'open' | 'fulfilled' | 'cancelled'
   created_at: Date
 }
 
-function getMarket(id: string): Promise<Market> {
+function getOrder(id: string): Promise<Order> {
   // Implementation
 }
 
 // FAIL: BAD: Using 'any'
-function getMarket(id: any): Promise<any> {
+function getOrder(id: any): Promise<any> {
   // Implementation
 }
 ```
 
-## React Best Practices
+## Frontend / Backend / API specifics
 
-### Component Structure
-
-```typescript
-// PASS: GOOD: Functional component with types
-interface ButtonProps {
-  children: React.ReactNode
-  onClick: () => void
-  disabled?: boolean
-  variant?: 'primary' | 'secondary'
-}
-
-export function Button({
-  children,
-  onClick,
-  disabled = false,
-  variant = 'primary'
-}: ButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`btn btn-${variant}`}
-    >
-      {children}
-    </button>
-  )
-}
-
-// FAIL: BAD: No types, unclear structure
-export function Button(props) {
-  return <button onClick={props.onClick}>{props.children}</button>
-}
-```
-
-### Custom Hooks
-
-```typescript
-// PASS: GOOD: Reusable custom hook
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value)
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
-
-    return () => clearTimeout(handler)
-  }, [value, delay])
-
-  return debouncedValue
-}
-
-// Usage
-const debouncedQuery = useDebounce(searchQuery, 500)
-```
-
-### State Management
-
-```typescript
-// PASS: GOOD: Proper state updates
-const [count, setCount] = useState(0)
-
-// Functional update for state based on previous state
-setCount(prev => prev + 1)
-
-// FAIL: BAD: Direct state reference
-setCount(count + 1)  // Can be stale in async scenarios
-```
-
-### Conditional Rendering
-
-```typescript
-// PASS: GOOD: Clear conditional rendering
-{isLoading && <Spinner />}
-{error && <ErrorMessage error={error} />}
-{data && <DataDisplay data={data} />}
-
-// FAIL: BAD: Ternary hell
-{isLoading ? <Spinner /> : error ? <ErrorMessage error={error} /> : data ? <DataDisplay data={data} /> : null}
-```
-
-## API Design Standards
-
-### REST API Conventions
-
-```
-GET    /api/markets              # List all markets
-GET    /api/markets/:id          # Get specific market
-POST   /api/markets              # Create new market
-PUT    /api/markets/:id          # Update market (full)
-PATCH  /api/markets/:id          # Update market (partial)
-DELETE /api/markets/:id          # Delete market
-
-# Query parameters for filtering
-GET /api/markets?status=active&limit=10&offset=0
-```
-
-### Response Format
-
-```typescript
-// PASS: GOOD: Consistent response structure
-interface ApiResponse<T> {
-  success: boolean
-  data?: T
-  error?: string
-  meta?: {
-    total: number
-    page: number
-    limit: number
-  }
-}
-
-// Success response
-return NextResponse.json({
-  success: true,
-  data: markets,
-  meta: { total: 100, page: 1, limit: 10 }
-})
-
-// Error response
-return NextResponse.json({
-  success: false,
-  error: 'Invalid request'
-}, { status: 400 })
-```
-
-### Input Validation
-
-```typescript
-import { z } from 'zod'
-
-// PASS: GOOD: Schema validation
-const CreateMarketSchema = z.object({
-  name: z.string().min(1).max(200),
-  description: z.string().min(1).max(2000),
-  endDate: z.string().datetime(),
-  categories: z.array(z.string()).min(1)
-})
-
-export async function POST(request: Request) {
-  const body = await request.json()
-
-  try {
-    const validated = CreateMarketSchema.parse(body)
-    // Proceed with validated data
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Validation failed',
-        details: error.errors
-      }, { status: 400 })
-    }
-  }
-}
-```
+React component structure, hooks, state management, and rendering patterns live in
+`frontend-patterns`. REST conventions, response shapes, and input validation live in
+`api-design` and `backend-patterns`. This skill stays framework-neutral.
 
 ## File Organization
 
 ### Project Structure
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── api/               # API routes
-│   ├── markets/           # Market pages
-│   └── (auth)/           # Auth pages (route groups)
-├── components/            # React components
-│   ├── ui/               # Generic UI components
-│   ├── forms/            # Form components
-│   └── layouts/          # Layout components
-├── hooks/                # Custom React hooks
-├── lib/                  # Utilities and configs
-│   ├── api/             # API clients
-│   ├── utils/           # Helper functions
-│   └── constants/       # Constants
-├── types/                # TypeScript types
-└── styles/              # Global styles
-```
+Follow the structure the project already uses; don't invent a new one. For a fresh project, group
+by feature or layer consistently, keep modules small and cohesive, and separate pure logic from
+I/O so it can be tested in isolation.
 
 ### File Naming
 
@@ -359,7 +170,7 @@ src/
 components/Button.tsx          # PascalCase for components
 hooks/useAuth.ts              # camelCase with 'use' prefix
 lib/formatDate.ts             # camelCase for utilities
-types/market.types.ts         # camelCase with .types suffix
+types/order.types.ts          # camelCase with .types suffix
 ```
 
 ## Comments & Documentation
@@ -386,75 +197,24 @@ name = user.name
 
 ```typescript
 /**
- * Searches markets using semantic similarity.
+ * Searches items by name, ranked by relevance.
  *
  * @param query - Natural language search query
  * @param limit - Maximum number of results (default: 10)
- * @returns Array of markets sorted by similarity score
- * @throws {Error} If OpenAI API fails or Redis unavailable
+ * @returns Array of items sorted by relevance score
+ * @throws {Error} If the search backend is unavailable
  *
  * @example
  * ```typescript
- * const results = await searchMarkets('election', 5)
- * console.log(results[0].name) // "Trump vs Biden"
+ * const results = await searchItems('quarterly report', 5)
  * ```
  */
-export async function searchMarkets(
+export async function searchItems(
   query: string,
   limit: number = 10
-): Promise<Market[]> {
+): Promise<Item[]> {
   // Implementation
 }
-```
-
-## Performance Best Practices
-
-### Memoization
-
-```typescript
-import { useMemo, useCallback } from 'react'
-
-// PASS: GOOD: Memoize expensive computations
-const sortedMarkets = useMemo(() => {
-  return markets.sort((a, b) => b.volume - a.volume)
-}, [markets])
-
-// PASS: GOOD: Memoize callbacks
-const handleSearch = useCallback((query: string) => {
-  setSearchQuery(query)
-}, [])
-```
-
-### Lazy Loading
-
-```typescript
-import { lazy, Suspense } from 'react'
-
-// PASS: GOOD: Lazy load heavy components
-const HeavyChart = lazy(() => import('./HeavyChart'))
-
-export function Dashboard() {
-  return (
-    <Suspense fallback={<Spinner />}>
-      <HeavyChart />
-    </Suspense>
-  )
-}
-```
-
-### Database Queries
-
-```typescript
-// PASS: GOOD: Select only needed columns
-const { data } = await supabase
-  .from('markets')
-  .select('id, name, status')
-  .limit(10)
-
-// FAIL: BAD: Select everything
-const { data } = await supabase
-  .from('markets')
-  .select('*')
 ```
 
 ## Testing Standards
@@ -479,9 +239,9 @@ test('calculates similarity correctly', () => {
 
 ```typescript
 // PASS: GOOD: Descriptive test names
-test('returns empty array when no markets match query', () => { })
-test('throws error when OpenAI API key is missing', () => { })
-test('falls back to substring search when Redis unavailable', () => { })
+test('returns empty array when no items match query', () => { })
+test('throws error when the API key is missing', () => { })
+test('falls back to substring search when the cache is unavailable', () => { })
 
 // FAIL: BAD: Vague test names
 test('works', () => { })
@@ -495,12 +255,12 @@ Watch for these anti-patterns:
 ### 1. Long Functions
 ```typescript
 // FAIL: BAD: Function > 50 lines
-function processMarketData() {
+function processImportedData() {
   // 100 lines of code
 }
 
 // PASS: GOOD: Split into smaller functions
-function processMarketData() {
+function processImportedData() {
   const validated = validateData()
   const transformed = transformData(validated)
   return saveData(transformed)
@@ -512,8 +272,8 @@ function processMarketData() {
 // FAIL: BAD: 5+ levels of nesting
 if (user) {
   if (user.isAdmin) {
-    if (market) {
-      if (market.isActive) {
+    if (order) {
+      if (order.isActive) {
         if (hasPermission) {
           // Do something
         }
@@ -525,8 +285,8 @@ if (user) {
 // PASS: GOOD: Early returns
 if (!user) return
 if (!user.isAdmin) return
-if (!market) return
-if (!market.isActive) return
+if (!order) return
+if (!order.isActive) return
 if (!hasPermission) return
 
 // Do something

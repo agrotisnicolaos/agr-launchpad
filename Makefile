@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/sh
 
-.PHONY: help setup install-plugins jupyter list-packs use-pack unuse-pack new-pack
+.PHONY: help setup install-plugins jupyter check list-packs use-pack unuse-pack new-pack
 
 help: ## Show this help
 	@echo "agr-launchpad — targets:"
@@ -19,6 +19,9 @@ install-plugins: ## Install all six base plugins via the Claude Code CLI
 
 jupyter: ## Start a local Jupyter kernel for the jupyter MCP (needs uv + jupyter)
 	@sh scripts/jupyter.sh
+
+check: ## Validate that manifests, settings, MCP config, skills, and packs agree
+	@sh scripts/check.sh
 
 list-packs: ## List available and installed packs
 	@sh scripts/use-pack.sh --list

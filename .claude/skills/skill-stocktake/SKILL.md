@@ -30,6 +30,13 @@ cd ~/path/to/my-project
 
 If the project has no `.claude/skills/` directory, only global skills and commands are evaluated.
 
+## Path Convention
+
+`$SKILL_DIR` below means **this skill's own directory** — provided as "Base directory for this
+skill" when the skill is invoked. It works wherever the skill is installed: globally
+(`~/.claude/skills/skill-stocktake`) or bundled in a project (`{repo}/.claude/skills/skill-stocktake`).
+The scripts and the `results.json` cache live there.
+
 ## Modes
 
 | Mode | Trigger | Duration |
@@ -37,28 +44,28 @@ If the project has no `.claude/skills/` directory, only global skills and comman
 | Quick Scan | `results.json` exists (default) | 5–10 min |
 | Full Stocktake | `results.json` absent, or `/skill-stocktake full` | 20–30 min |
 
-**Results cache:** `~/.claude/skills/skill-stocktake/results.json`
+**Results cache:** `$SKILL_DIR/results.json`
 
 ## Quick Scan Flow
 
 Re-evaluate only skills that have changed since the last run (5–10 min).
 
-1. Read `~/.claude/skills/skill-stocktake/results.json`
-2. Run: `bash ~/.claude/skills/skill-stocktake/scripts/quick-diff.sh \
-         ~/.claude/skills/skill-stocktake/results.json`
+1. Read `$SKILL_DIR/results.json`
+2. Run: `bash $SKILL_DIR/scripts/quick-diff.sh \
+         $SKILL_DIR/results.json`
    (Project dir is auto-detected from `$PWD/.claude/skills`; pass it explicitly only if needed)
 3. If output is `[]`: report "No changes since last run." and stop
 4. Re-evaluate only those changed files using the same Phase 2 criteria
 5. Carry forward unchanged skills from previous results
 6. Output only the diff
-7. Run: `bash ~/.claude/skills/skill-stocktake/scripts/save-results.sh \
-         ~/.claude/skills/skill-stocktake/results.json <<< "$EVAL_RESULTS"`
+7. Run: `bash $SKILL_DIR/scripts/save-results.sh \
+         $SKILL_DIR/results.json <<< "$EVAL_RESULTS"`
 
 ## Full Stocktake Flow
 
 ### Phase 1 — Inventory
 
-Run: `bash ~/.claude/skills/skill-stocktake/scripts/scan.sh`
+Run: `bash $SKILL_DIR/scripts/scan.sh`
 
 The script enumerates skill files, extracts frontmatter, and collects UTC mtimes.
 Project dir is auto-detected from `$PWD/.claude/skills`; pass it explicitly only if needed.
@@ -107,7 +114,7 @@ Each skill is evaluated against this checklist:
 
 ```
 - [ ] Content overlap with other skills checked
-- [ ] Overlap with MEMORY.md / CLAUDE.md checked
+- [ ] Overlap with CLAUDE.md checked
 - [ ] Freshness of technical references verified (use WebSearch if tool names / CLI flags / APIs are present)
 - [ ] Usage frequency considered
 ```
@@ -125,7 +132,7 @@ Verdict criteria:
 Evaluation is **holistic AI judgment** — not a numeric rubric. Guiding dimensions:
 - **Actionability**: code examples, commands, or steps that let you act immediately
 - **Scope fit**: name, trigger, and content are aligned; not too broad or narrow
-- **Uniqueness**: value not replaceable by MEMORY.md / CLAUDE.md / another skill
+- **Uniqueness**: value not replaceable by CLAUDE.md / another skill
 - **Currency**: technical references work in the current environment
 
 **Reason quality requirements** — the `reason` field must be self-contained and decision-enabling:
@@ -153,16 +160,16 @@ Evaluation is **holistic AI judgment** — not a numeric rubric. Guiding dimensi
 1. **Retire / Merge**: present detailed justification per file before confirming with user:
    - What specific problem was found (overlap, staleness, broken references, etc.)
    - What alternative covers the same functionality (for Retire: which existing skill/rule; for Merge: the target file and what content to integrate)
-   - Impact of removal (any dependent skills, MEMORY.md references, or workflows affected)
+   - Impact of removal (any dependent skills, CLAUDE.md references, or workflows affected)
 2. **Improve**: present specific improvement suggestions with rationale:
    - What to change and why (e.g., "trim 430→200 lines because sections X/Y duplicate python-patterns")
    - User decides whether to act
 3. **Update**: present updated content with sources checked
-4. Check MEMORY.md line count; propose compression if >100 lines
+4. Check CLAUDE.md size; propose compression if the assets/rules sections have bloated
 
 ## Results File Schema
 
-`~/.claude/skills/skill-stocktake/results.json`:
+`$SKILL_DIR/results.json`:
 
 **`evaluated_at`**: Must be set to the actual UTC time of evaluation completion.
 Obtain via Bash: `date -u +%Y-%m-%dT%H:%M:%SZ`. Never use a date-only approximation like `T00:00:00Z`.

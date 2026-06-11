@@ -16,6 +16,12 @@ else
   cp "$ROOT/.env.example" "$ROOT/.env"
   echo "   Created .env from .env.example. Open it and add a GitHub token if you want the GitHub MCP."
 fi
+cat <<'EOF'
+   IMPORTANT: Claude Code does NOT read .env by itself. Export the variables in the shell
+   that launches Claude Code, e.g.:
+     set -a; source .env; set +a; claude
+   (or use direnv so this happens automatically when you cd into the folder).
+EOF
 echo
 
 bold "2. Plugins"
@@ -31,8 +37,10 @@ echo
 
 bold "3. MCP servers (one approval)"
 cat <<'EOF'
-   .mcp.json ships context7 + github + jupyter. After trusting the folder, approve them when asked
-   (or run `claude mcp list`). The GitHub one needs GITHUB_PAT in your .env.
+   .mcp.json ships context7 + github + jupyter + chrome-devtools (optional — decline it if you
+   don't want browser debugging). After trusting the folder, approve each when asked (or run
+   `claude mcp list`). The GitHub one needs GITHUB_PAT exported in the shell that launches
+   Claude Code (see step 1) — putting it in .env alone is not enough.
 EOF
 echo
 

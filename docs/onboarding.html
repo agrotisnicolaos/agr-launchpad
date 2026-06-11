@@ -276,8 +276,10 @@
         launchpad folder, run:
         <span class="where where--term">🖥 Terminal</span>
         <pre><code>make install-plugins</code></pre></li>
-      <li><h4>Approve the live tools</h4>Claude asks about three “MCP servers” (context7, github, jupyter).
-        Click <span class="kbd">Approve</span>. <i>(GitHub needs a token — optional, see below.)</i></li>
+      <li><h4>Approve the live tools</h4>Claude asks about four “MCP servers” (context7, github, jupyter,
+        chrome-devtools). Click <span class="kbd">Approve</span> for the ones you want — chrome-devtools is
+        optional (it lets Claude look at web pages it builds for you; decline it if unsure).
+        <i>(GitHub needs a token — optional, see below.)</i></li>
       <li><h4>Restart Claude Code</h4>Close and reopen it so everything loads. <b>Done.</b></li>
     </ol>
     <p class="tip"><b>Check it worked:</b> in the Claude chat, type <code>/plugin</code> — you should see
@@ -294,7 +296,12 @@
         <b>Generate new token</b> (a fine-grained token with read access to your repos is plenty). Copy it.</li>
       <li><h4>Paste it in</h4>Open the new <code>.env</code> file and put your token after the equals sign:
         <pre><code>GITHUB_PAT=github_pat_xxxxxxxxxxxx</code></pre>
-        Save, then restart Claude Code.</li>
+        Save the file.</li>
+      <li><h4>Load it when you start Claude Code</h4>Claude Code reads the token from your Terminal
+        session, not from the file directly. Start Claude Code from the Terminal like this:
+        <span class="where where--term">🖥 Terminal</span>
+        <pre><code>set -a; source .env; set +a; claude</code></pre>
+        (Tip: install <a href="https://direnv.net">direnv</a> once and this happens automatically.)</li>
     </ol>
     <p class="warn"><b>Your token stays private.</b> The <code>.env</code> file is never uploaded or
       shared. Leave it blank to skip GitHub entirely — everything else still works.</p>
@@ -328,17 +335,24 @@
     <div class="grid">
       <div class="card"><span class="tag">by Upstash</span><h4>context7</h4>
         <p>Fetches up-to-date documentation, so Claude uses today's information, not old memory.</p></div>
-      <div class="card"><span class="tag">by Anthropic</span><h4>github</h4>
+      <div class="card"><span class="tag">by GitHub</span><h4>github</h4>
         <p>Connects your GitHub repositories, issues, and pull requests (needs the optional token).</p></div>
       <div class="card"><span class="tag">by Datalayer</span><h4>jupyter</h4>
         <p>Runs live notebooks — great for data and charts. Start it with <code>make jupyter</code>.</p></div>
+      <div class="card"><span class="tag">by Google Chrome · optional</span><h4>chrome-devtools</h4>
+        <p>Lets Claude open the page it just built, take a screenshot, and check for errors — so it can
+        verify its own work instead of guessing.</p></div>
     </div>
 
     <h3>Ready-made skills &amp; agents — already in the folder</h3>
-    <p>No installing needed. Skills are invoked with a slash, like <code>/grill-me</code>. Highlights:
-      <code>/grill-me</code> (stress-tests your plan with questions), <code>coding-standards</code>,
-      <code>html</code> (polished web pages), <code>dashboard-builder</code>, <code>code-tour</code>.
-      Helper “agents” quietly plan and explore your project when needed.</p>
+    <p>No installing needed. Skills are invoked with a slash, like <code>/grill-me</code>, or picked up
+      automatically when relevant. Highlights: <code>/grill-me</code> (stress-tests your plan with
+      questions), <code>coding-standards</code>, <code>error-handling</code>, <code>secure-coding</code>
+      (safety checks while writing sensitive code), <code>api-design</code> +
+      <code>backend-patterns</code> + <code>frontend-patterns</code> (solid foundations for both halves
+      of an app), <code>html</code> (polished one-file web pages), <code>webapp-testing</code> (Claude
+      screenshots its own work to verify it), <code>code-tour</code>. Helper “agents” quietly plan and
+      explore your project when needed.</p>
   </section>
 
   <section id="first">
@@ -471,8 +485,10 @@ make unuse-pack name=ml    # remove it</code></pre>
       chatting with Claude. The Terminal is only for a few optional commands.</p>
 
     <p class="lead-q">The GitHub features aren't working.</p>
-    <p>Check that you created the <code>.env</code> file and pasted your token into <code>GITHUB_PAT</code>,
-      then restarted. No token? That's fine — GitHub is optional.</p>
+    <p>Check that you created the <code>.env</code> file, pasted your token into <code>GITHUB_PAT</code>,
+      and started Claude Code with the token loaded
+      (<code>set -a; source .env; set +a; claude</code> — see section 5). No token? That's fine —
+      GitHub is optional.</p>
 
     <p class="lead-q">Jupyter / notebooks won't connect.</p>
     <p>Run <code>make jupyter</code> in the 🖥 Terminal and leave that window open — it powers the live

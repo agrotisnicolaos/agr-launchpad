@@ -10,9 +10,11 @@ metadata:
 
 Author self-contained HTML artifacts. This skill owns **packaging + data-wiring**; it composes
 rather than duplicates:
-- **`frontend-design`** (global) owns visual taste / design tokens — the source of aesthetics.
-- **`dashboard-builder`** (ECC, vendored) covers operator dashboards on Grafana/SigNoz — prefer it
-  for live observability dashboards; use this skill for standalone, no-server artifacts.
+- **`frontend-design`** (plugin) owns visual taste / design tokens — the source of aesthetics.
+- **`webapp-testing`** owns looking at rendered output — use it to screenshot and verify the
+  artifact actually renders before claiming done.
+- Live observability dashboards (Grafana/SigNoz) belong to `dashboard-builder` in the **ops pack**
+  (`make use-pack name=ops`); use this skill for standalone, no-server artifacts.
 
 ## Output contract
 - **Single file:** inline CSS + JS, CDN-pinned libraries (chart.js / d3 / plotly — pin exact
@@ -23,9 +25,8 @@ rather than duplicates:
 
 ## Method
 1. Pull aesthetic direction from `frontend-design` **before** building.
-2. Wire the data: inline it, or load a sibling `data.json`. Gather any data via `ctx_execute`.
+2. Wire the data: inline it, or load a sibling `data.json`. Gather any data via `ctx_execute`
+   (context-mode plugin) or plain shell if the plugin is absent.
 3. Build one file; verify it renders offline and is responsive; check the empty-data path.
-
-## Verification
-Produce one standalone dashboard HTML that renders offline and is responsive; show how it composes
-`frontend-design` rather than overlapping it.
+4. Verify visually: render it (open in browser or use `webapp-testing` to screenshot) and look at
+   it before claiming done.

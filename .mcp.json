@@ -1,5 +1,5 @@
 {
-  "$comment": "agr-launchpad project MCP servers. After you trust the folder, Claude Code asks you to approve these once. Tokens come from a local .env file (copy .env.example -> .env) and are NEVER committed. context7 = live docs; github = your repos/issues/PRs; jupyter = live notebook kernel (run `make jupyter`).",
+  "$comment": "agr-launchpad project MCP servers. After you trust the folder, Claude Code asks you to approve EACH server once - approve only the ones you want (chrome-devtools is optional; decline it if you don't need browser debugging). SECRETS: Claude Code expands ${GITHUB_PAT} from the environment of the shell that LAUNCHES it - it does not read .env automatically. Store the token in .env (copy .env.example -> .env, never committed), then load it before launching: `set -a; source .env; set +a; claude` - or use direnv. context7 = live docs; github = your repos/issues/PRs (GitHub's official hosted MCP server); jupyter = live notebook kernel (run `make jupyter`); chrome-devtools = let Claude open pages, take screenshots, and read console/network output to verify UI work.",
   "mcpServers": {
     "context7": {
       "command": "npx",
@@ -9,13 +9,10 @@
       ]
     },
     "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT}"
       }
     },
     "jupyter": {
@@ -28,6 +25,13 @@
         "JUPYTER_TOKEN": "${JUPYTER_TOKEN:-agr-local-dev}",
         "ALLOW_IMG_OUTPUT": "true"
       }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
     }
   }
 }

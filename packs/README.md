@@ -38,7 +38,9 @@ These are the kinds of packs this system is built to hold — build them as you 
 | `ml` | data/ML skills, eval & regression-testing agents, notebook conventions |
 | `ios` | Swift/SwiftUI patterns, concurrency, on-device model skills, build-resolver agents |
 | `journal` | journaling/writing skills, daily-note templates, reflection prompts |
-| `web` | frontend patterns beyond the base frontend-design plugin, component/a11y agents |
+| `web` | framework-specific frontend depth beyond the base `frontend-patterns` skill, a11y agents |
+| `backend` | framework-specific backend depth (Django/Rails/Spring…) beyond the base `backend-patterns` skill |
 
-None ship populated yet — only [`_template/`](_template/) does. That's intentional: the base stays
-clean, and you grow the catalog deliberately.
+Two ship populated: [`_template/`](_template/) (the scaffold) and [`ops/`](ops/) (Grafana/SigNoz
+dashboard building — platform-specific, so it lives here rather than in the base). That's
+intentional: the base stays clean, and you grow the catalog deliberately.

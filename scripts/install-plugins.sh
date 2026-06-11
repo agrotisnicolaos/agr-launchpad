@@ -2,7 +2,7 @@
 # agr-launchpad — install all base plugins via the Claude Code CLI.
 #
 # This is the "one command" alternative to approving the on-folder-trust prompts.
-# It adds the two third-party marketplaces, then installs all six plugins.
+# It adds the three extra marketplaces, then installs all six plugins.
 # Safe to re-run; already-installed plugins are skipped by Claude Code.
 set -eu
 
@@ -15,10 +15,11 @@ fi
 bold() { printf '\033[1m%s\033[0m\n' "$1"; }
 
 bold "1/2 · Adding marketplaces"
-# claude-plugins-official is built in; the two below are third-party. '|| true' keeps
-# the script going if a marketplace is already known.
-claude plugin marketplace add mksglu/context-mode    || true
-claude plugin marketplace add thedotmack/claude-mem   || true
+# claude-plugins-official is built in; the three below match .claude/settings.json
+# (extraKnownMarketplaces). '|| true' keeps the script going if one is already known.
+claude plugin marketplace add mksglu/context-mode          || true
+claude plugin marketplace add thedotmack/claude-mem        || true
+claude plugin marketplace add agrotisnicolaos/agr-hub      || true
 
 bold "2/2 · Installing plugins"
 for p in \

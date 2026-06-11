@@ -24,9 +24,11 @@ When you start a specific kind of project (ML, an iOS app, a journal…), you ad
    ```
    (Plugins live in your global Claude setup, so they can't ship pre-installed in a repo — this repo
    just pre-configures them. Confirm with `/plugin` or `claude plugin list`.)
-4. **Approve the MCP servers** when asked (context7, github, jupyter). Check with `claude mcp list`.
-5. **Add secrets (optional):** `cp .env.example .env`, then paste a GitHub token if you want the
-   GitHub MCP. Run `make setup` for a guided walkthrough.
+4. **Approve the MCP servers** when asked (context7, github, jupyter — plus chrome-devtools, which
+   is optional: decline it if you don't want browser debugging). Check with `claude mcp list`.
+5. **Add secrets (optional):** `cp .env.example .env`, paste a GitHub token, then export it in the
+   shell that launches Claude Code (`set -a; source .env; set +a; claude` — Claude Code does not
+   read `.env` by itself; direnv automates this). Run `make setup` for a guided walkthrough.
 6. **Restart Claude Code.** You're ready — just start describing what you want to build.
 
 ## What you get out of the box
@@ -39,13 +41,23 @@ When you start a specific kind of project (ML, an iOS app, a journal…), you ad
 - **context-mode** — keeps big tool output out of the context window.
 - **claude-mem** — persistent memory across sessions.
 
-**MCP servers** (`.mcp.json`): **context7** (live docs), **github** (your repos/issues/PRs),
-**jupyter** (live notebooks — `make jupyter`).
+**MCP servers** (`.mcp.json`): **context7** (live docs), **github** (your repos/issues/PRs —
+GitHub's official hosted server), **jupyter** (live notebooks — `make jupyter`), and
+**chrome-devtools** (optional — lets Claude screenshot pages and read console/network output to
+verify UI work).
 
-**Bundled skills** (zero-install, in `.claude/skills/`): `grill-me`, `coding-standards`,
-`error-handling`, `html`, `dashboard-builder`, `code-tour`, `skill-stocktake`.
+**Bundled skills** (zero-install, in `.claude/skills/`):
+- *Clarify & review:* `grill-me`, `skill-stocktake`
+- *Code quality:* `coding-standards`, `error-handling`, `secure-coding`
+- *Backend & frontend foundations:* `api-design`, `backend-patterns`, `frontend-patterns`
+- *See your output:* `html` (single-file artifacts), `webapp-testing` (Playwright screenshots/logs,
+  by Anthropic), `code-tour` (guided walkthroughs)
 
-**Bundled agents:** `architect`, `code-architect`, `code-explorer`.
+**Bundled agents:** `architect` (system-level design & ADRs), `code-architect` (feature blueprints),
+`code-explorer` (existing-code tracing).
+
+`CLAUDE.md` teaches Claude when to reach for each of these — the kit routes itself. Run
+`make check` to verify the catalog, configs, and files stay in sync.
 
 **Installed separately** (see onboarding): **gsd** planning toolkit, **markitdown** VS Code extension.
 
@@ -61,7 +73,7 @@ make unuse-pack name=ml      # remove it
 ```
 
 A pack bundles skills, agents, MCP servers, plugins, or a rulebook fragment. Local packs live in
-`packs/` (only `_template` ships populated). Published packs install from the **agr·hub** marketplace
+`packs/` (`_template` and `ops` ship populated). Published packs install from the **agr·hub** marketplace
 — already pre-registered here — with one command:
 
 ```
@@ -74,8 +86,8 @@ See [`packs/README.md`](packs/README.md) for building your own.
 ## Conventions
 
 `CLAUDE.md` holds four behavioral principles (Think Before Coding · Simplicity First · Surgical
-Changes · Goal-Driven Execution) that apply to every project. Packs append to it; the principles
-stay put.
+Changes · Goal-Driven Execution) plus an **Assets** routing section that tells Claude when to use
+each bundled skill, agent, plugin, and MCP server. Packs append to it; the principles stay put.
 
 ## Attribution
 
