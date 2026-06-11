@@ -12,9 +12,11 @@ When you start a specific kind of project (ML, an iOS app, a journal…), you ad
 ## Quickstart
 
 1. **Install prerequisites:** [Claude Code](https://claude.com/claude-code) and [Node.js](https://nodejs.org) (LTS).
-2. **Clone & open:**
+2. **Get your copy:** click **[Use this template](https://github.com/agrotisnicolaos/agr-launchpad/generate)**
+   on GitHub (recommended — creates a clean repo of your own), or download the
+   [latest release](https://github.com/agrotisnicolaos/agr-launchpad/releases/latest). Then:
    ```bash
-   git clone <your-fork-url> agr-launchpad
+   git clone <your-repo-url> agr-launchpad
    cd agr-launchpad
    ```
    Open the folder in Claude Code (or VS Code with the Claude Code extension).
